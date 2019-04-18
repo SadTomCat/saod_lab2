@@ -7,66 +7,43 @@
 #include "hashtab.h"
 #include "hash.h"
 
-#define NUM_WORD 10
-
 char* generation_word(char* word);
 void generation_word2(char* str);
 
 int main() 
 { 
     srand(time(NULL));
-    /*for (uint32_t i = 0; i < 2; i++) {
-        generation_word(&word);  
-        printf("%s\n", word);
-        free(word);
-    } 
-
-    generation_word(&word);  
-    printf("%s\n", word);
-    uint_least8_t len = strlen(word);
-    printf("%d %d\n", len, DJBHash(word, len));
-    printf("%d %d\n", len, KRHash(word));
-    free(word);*/
-
-    struct bstree *tree, *node;
-    char list[5][5] = 
-    { 
-        {'z', 'z', 'a', 'a', '\0'},
-        {'e', 'w', 'h', 'r', '\0'},
-        {'z', 'z', 'a', 'z', '\0'},
-        {'e', 'a', 'a', 'a', '\0'},
-        {'z', 'z', 'z', 'z', '\0'}
-    };
-
     char* word;
+    char word_list[HASH_SIZE][19];
+    struct bstree *tree, *node;
+    struct HashTab hash_tab[HASH_SIZE], *node_hash;
     
-    word = generation_word(word);
-    tree = bstree_create(word, DJBHash(word, strlen(word)));
-    printf("root: %d %s 0x%x 0x%x\n\n", tree->value, tree->key, tree->left, tree->right);
+    //TASK 1
+    for (int i = 0; i < HASH_SIZE; i++) {
+        word = generation_word(word);
+        strcpy(word_list[i], word);
+    }
 
-    bstree_add(tree, list[4], DJBHash(list[4], strlen(list[4])));
-    printf("root: %d %s 0x%x 0x%x\n", tree->value, tree->key, tree->left, tree->right);
+    //hash
+    hashtab_init(hash_tab);
 
+    char hash_word3[16] = "woconfsptxv";
+    hashtab_add_DBJ(hash_tab, hash_word3, DJBHash(hash_word3, strlen(hash_word3)));
 
-    bstree_add(tree, list[1], DJBHash(list[1], strlen(list[1])));
-    printf("root: %d %s 0x%x 0x%x\n", tree->value, tree->key, tree->left, tree->right);
+    char hash_word[16] = "kdmctrcemqhmvmw";
+    hashtab_add_DBJ(hash_tab, hash_word, DJBHash(hash_word, strlen(hash_word)));
+    
+    char hash_word2[16] = "xuwkvmycubq";
+    hashtab_add_DBJ(hash_tab, hash_word2, DJBHash(hash_word2, strlen(hash_word2)));
 
-    bstree_add(tree, list[2], DJBHash(list[2], strlen(list[2])));
-    node = bstree_lookup(tree, list[1]);
-    printf("root: %d %s 0x%x 0x%x\n", node->value, node->key, node->left, node->right);
+    node_hash = hashtab_lookup_DJB(&hash_tab, "qewqwe");
+    hashtab_print(hash_tab);
+    printf("\nlookup: %s %d\n", node_hash->key, node_hash->value);
 
-    node = bstree_lookup(tree, list[2]);
-    printf("root: %d %s 0x%x 0x%x\n", node->value, node->key, node->left, node->right);
-
-    bstree_add(tree, list[3], DJBHash(list[3], strlen(list[3])));
-    node = bstree_lookup(tree, list[1]);
-    printf("root: %d %s 0x%x 0x%x\n", node->value, node->key, node->left, node->right);
-
-    printf("root: %d %s 0x%x 0x%x\n", tree->value, tree->key, tree->left, tree->right);
-    node = bstree_max(tree);
-    printf("%s\n", node->key);
-    node = bstree_min(tree);
-    printf("%s\n", node->key);
+    hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
+    hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
+    hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
+    hashtab_print(hash_tab);
 
     free(word);
 

@@ -13,7 +13,7 @@ unsigned int DJBHash(char* str, unsigned int len)
     while (c = *str++)
         hash = ((hash << 5) + hash) + c;
 
-    return hash;
+    return hash % HASH_SIZE;
 }
 
 unsigned int KRHash(char *s) 

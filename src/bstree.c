@@ -128,24 +128,21 @@ struct bstree *bstree_delete(struct bstree *tree, char *key)
 
     //third
     if (tree->left != NULL && tree->right != NULL) {
-        min = tree->right;
-        min_parent = min;
+        struct bstree *most_left = tree->right;
+        struct bstree *most_left_parent = tree;
 
-        if (min_parent->left != NULL) {
-            min = min_parent->left;
-            tree = min;
-            while (min->left != NULL) {
-                min_parent = min;
-                min = min->left;
-            }
-            
-            if (strcmp(tree->key, parent->key) == -1) {
-                parent->left = min;
-            }
+        while (most_left->left != NULL) {
+            most_left_parent = most_left;
+            most_left = most_left->left;
+        }
 
-            if (strcmp(tree->key, parent->key) == 1) {
-                parent->right = min;
-            }
+        tree->value = most_left->value;
+        struct bstree *removed = most_left;
+
+        if (most_left_parent->left == most_left) {
+            most_left_parent = NULL;
+        } else {
+            most_left_parent->right = most_left->right;
         }
     }
 }
