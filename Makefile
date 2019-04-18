@@ -1,8 +1,8 @@
-main: ./built/gen_and_hash.o ./built/bstree.o ./built/hashtab.o ./built/main.o 
-	gcc -o ./bin/main ./built/gen_and_hash.o  ./built/bstree.o ./built/hashtab.o  ./built/main.o 
+main: ./built/hash.o ./built/bstree.o ./built/hashtab.o ./built/main.o 
+	gcc -o ./bin/main ./built/hash.o  ./built/bstree.o ./built/hashtab.o  ./built/main.o 
 	 
-./built/gen_and_hash.o: ./src/gen_and_hash.c
-	gcc -o ./built/gen_and_hash.o -c ./src/gen_and_hash.c
+./built/hash.o: ./src/hash.c
+	gcc -o ./built/hash.o -c ./src/hash.c
 
 ./built/main.o: ./src/main.c
 	gcc -o ./built/main.o -c ./src/main.c
@@ -12,9 +12,6 @@ main: ./built/gen_and_hash.o ./built/bstree.o ./built/hashtab.o ./built/main.o
 
 ./built/hashtab.o: ./src/hashtab.c
 	gcc -o ./built/hashtab.o -c ./src/hashtab.c
-
-./built/generation.o: ./src/generation.c
-	gcc -o ./built/generation.o -c ./src/generation.c
 
 run: ./bin/main
 	./bin/main

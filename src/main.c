@@ -5,11 +5,12 @@
 #include <string.h>
 #include "bstree.h"
 #include "hashtab.h"
-#include "gen_and_hash.h"
+#include "hash.h"
 
 #define NUM_WORD 10
 
-void generation_word(char** word);
+char* generation_word(char* word);
+void generation_word2(char* str);
 
 int main() 
 { 
@@ -28,7 +29,7 @@ int main()
     free(word);*/
 
     struct bstree *tree, *node;
-    char word[5][5] = 
+    char list[5][5] = 
     { 
         {'z', 'z', 'a', 'a', '\0'},
         {'e', 'w', 'h', 'r', '\0'},
@@ -37,32 +38,28 @@ int main()
         {'z', 'z', 'z', 'z', '\0'}
     };
 
-    char words[NUM_WORD][19];
-
-    for (int i = 0; i < NUM_WORD; i++) {
-        generation_word(words);
-        printf("%s\n", words[i]);
-    } 
-       
-    tree = bstree_create(word[0], DJBHash(word[0], strlen(word[0])));
+    char* word;
+    
+    word = generation_word(word);
+    tree = bstree_create(word, DJBHash(word, strlen(word)));
     printf("root: %d %s 0x%x 0x%x\n\n", tree->value, tree->key, tree->left, tree->right);
 
-    bstree_add(tree, word[4], DJBHash(word[4], strlen(word[4])));
+    bstree_add(tree, list[4], DJBHash(list[4], strlen(list[4])));
     printf("root: %d %s 0x%x 0x%x\n", tree->value, tree->key, tree->left, tree->right);
 
 
-    bstree_add(tree, word[1], DJBHash(word[1], strlen(word[1])));
+    bstree_add(tree, list[1], DJBHash(list[1], strlen(list[1])));
     printf("root: %d %s 0x%x 0x%x\n", tree->value, tree->key, tree->left, tree->right);
 
-    bstree_add(tree, word[2], DJBHash(word[2], strlen(word[2])));
-    node = bstree_lookup(tree, word[1]);
+    bstree_add(tree, list[2], DJBHash(list[2], strlen(list[2])));
+    node = bstree_lookup(tree, list[1]);
     printf("root: %d %s 0x%x 0x%x\n", node->value, node->key, node->left, node->right);
 
-    node = bstree_lookup(tree, word[2]);
+    node = bstree_lookup(tree, list[2]);
     printf("root: %d %s 0x%x 0x%x\n", node->value, node->key, node->left, node->right);
 
-    bstree_add(tree, word[3], DJBHash(word[3], strlen(word[3])));
-    node = bstree_lookup(tree, word[1]);
+    bstree_add(tree, list[3], DJBHash(list[3], strlen(list[3])));
+    node = bstree_lookup(tree, list[1]);
     printf("root: %d %s 0x%x 0x%x\n", node->value, node->key, node->left, node->right);
 
     printf("root: %d %s 0x%x 0x%x\n", tree->value, tree->key, tree->left, tree->right);
@@ -71,21 +68,84 @@ int main()
     node = bstree_min(tree);
     printf("%s\n", node->key);
 
+    free(word);
 
     return 0;
 }
 
-void generation_word(char** word) 
+char* generation_word(char* word) 
 {
     uint_least8_t i = 0;
     uint_least8_t num_ch = rand() % 12 + 6;
-    *word = malloc(num_ch * sizeof(char));
+    word = malloc(num_ch * sizeof(char));
     
     while (i < num_ch - 1) {
         word[i] = rand() % 25 + 'a';
         i++;
     }
     word[i] = '\0';
+
+    return word;
+}
+
+void generation_word2(char* str) {
+    if (str[0] == 122 && str[1] == 122 && str[2] == 122 && str[3] == 122) {
+        printf("ERROR: str = \'z\' \'z\' \'z\' \'z\'\n");
+        return;
+    }
+
+    if (str[3] != 122) {
+        str[3]++;
+        return;
+    }
+
+    if (str[3] == 122 && str[2] != 122) {
+        str[2]++;
+        str[3] = 'a';
+        return;
+    }
+
+    if (str[2] != 122 || str[1] != 122 || str[0] != 122 && str[3] == 122) {
+        str[3] = 'a';
+    }
+
+    if (str[2] != 122) {
+        str[2]++;
+        return;
+    }
+
+    if (str[2] == 122 && str[1] != 122) {
+        str[1]++;
+        str[2] = 'a';
+        str[3] = 'a';
+        return;
+    }
+
+    if (str[1] != 122 || str[0] != 122 && str[2] == 122) {
+        str[2] = 'a';
+    }
+
+    if (str[1] != 122) {
+        str[1]++;
+        return;
+    }
+
+    if (str[1] == 122 && str[0] != 122) {
+        str[0]++;
+        str[1] = 'a';
+        str[2] = 'a';
+        str[3] = 'a';
+        return;
+    }
+
+
+    if (str[0] != 122 && str[1] == 122) {
+        str[1] = 'a';
+    }
+
+    if (str[0] == 122 && str[1] == 122 && str[2] == 122 && str[3] == 122) {
+        return;
+    }
 }
 
 
