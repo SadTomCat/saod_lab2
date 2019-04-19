@@ -5,6 +5,7 @@ struct HashTab {
     char *key;
     uint32_t value;
 
+    struct HashTab *next;
 };
 
 unsigned int KRHash(char *s); // // 

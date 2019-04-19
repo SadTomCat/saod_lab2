@@ -42,28 +42,17 @@ int main()
             node = bstree_lookup(tree, word_list[rand_word]);
             end_time = wtime();
             time = end_time - start_time;
-            printf("words = %d, avr. time %.9Lf\n", i, time);
+            printf("words = %d, avr. time %.10Lf\n", i, time);
 
         } 
     }
 
 
+
+  /*  //hash
     hashtab_init(hash_tab);
-    for (uint32_t i = 0; i < HASH_SIZE; i++) {
-        hashtab_add_DBJ(hash_tab, word_list[i], DJBHash(word_list[i], strlen(word_list[i])));
-    }
-    for (uint32_t i = 0; i < HASH_SIZE; i++) {
-        node_hash = hashtab_lookup_DJB(hash_tab, word_list[i]);
-        if (node != NULL) {
-            printf("%d %s %d\n", i, node_hash->key, node_hash->value);
-
-        }
-    }
-
-
-/*
-    //hash
-    hashtab_init(hash_tab);
+    hashtab_print(hash_tab);
+    printf("\n");
 
     char hash_word3[16] = "woconfsptxv";
     hashtab_add_DBJ(hash_tab, hash_word3, DJBHash(hash_word3, strlen(hash_word3)));
@@ -71,17 +60,27 @@ int main()
     char hash_word[16] = "kdmctrcemqhmvmw";
     hashtab_add_DBJ(hash_tab, hash_word, DJBHash(hash_word, strlen(hash_word)));
     
+    
     char hash_word2[16] = "xuwkvmycubq";
     hashtab_add_DBJ(hash_tab, hash_word2, DJBHash(hash_word2, strlen(hash_word2)));
-
-    node_hash = hashtab_lookup_DJB(hash_tab, "qewqwe");
     hashtab_print(hash_tab);
-    printf("\nlookup: %s %d\n", node_hash->key, node_hash->value);
+
+    printf("\n");
+    for (int i = 0; i < HASH_SIZE; i++) {
+        printf("hash_tab[%d] %p\n", i, &hash_tab[i]);
+    }
+    printf("\n");
+
+    node_hash = hashtab_lookup_DJB(hash_tab, "kdmctrcemqhmvmw");
+    printf("%s\n", node_hash->key);
+    node_hash = node_hash->next;
+    printf("%s %p %p\n", node_hash->key, node_hash->next, node_hash);
 
     hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
-    hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
-    hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
     hashtab_print(hash_tab);
+
+    node_hash = hashtab_lookup_DJB(hash_tab, "xuwkvmycubq");
+        printf("%s %p %p\n", node_hash->key, node_hash->next, node_hash);
 */
     //free(word);
 
