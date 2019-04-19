@@ -27,15 +27,16 @@ void bstree_add(struct bstree *tree, char *key, int value)
 
     int cmp;
     struct bstree *parent, *node;
+
     while (tree != NULL) {
         parent = tree;
         cmp = strcmp(key, tree->key);
-
         if (cmp < 0) {
             tree = tree->left;
         } else if (cmp > 0) {
             tree = tree->right;
         } else {
+            printf("ERROR: %s\n", key);
             return;
         }
     } 
@@ -44,10 +45,13 @@ void bstree_add(struct bstree *tree, char *key, int value)
     node = bstree_create(key, value);
     if (cmp < 0) {
         parent->left = node;
+        return;
     } 
     if (cmp > 0) {
         parent->right = node;
+        return;
     }
+
 }
 
 
@@ -60,6 +64,7 @@ struct bstree *bstree_lookup(struct bstree *tree, char *key)
     int cmp;
     while (tree != NULL) {
         cmp = strcmp(key, tree->key);
+       
         if (cmp == 0) {
             return tree;
         }

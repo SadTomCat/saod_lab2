@@ -39,6 +39,7 @@ void hashtab_add_DBJ(struct HashTab **hash_tab, char *key, int value)
             node->key = key;
             node->value = value;
             hash_tab[index] = node;
+            return;
         } else {
             while (hash_tab[index] != NULL && index < HASH_SIZE) {
                 index++;
@@ -53,6 +54,7 @@ void hashtab_add_DBJ(struct HashTab **hash_tab, char *key, int value)
                 node->key = key;
                 node->value = value;
                 hash_tab[index] = node;
+                return;
             }
         }
     }
@@ -97,7 +99,6 @@ struct HashTab *hashtab_lookup_DJB(struct HashTab **hash_tab, char *key)
 {
     struct HashTab *node;
     uint32_t index = DJBHash(key, strlen(key));
-    uint32_t count_free_place, sub_index;
     
     for (node = hash_tab[index]; node != NULL && index < HASH_SIZE; index++) {
         if (strcmp(node->key, key) == 0) {
@@ -105,23 +106,7 @@ struct HashTab *hashtab_lookup_DJB(struct HashTab **hash_tab, char *key)
         }
     }
 
-    sub_index = index;
-    while (sub_index < HASH_SIZE) {
-        if (hash_tab[sub_index] == NULL) {
-            count_free_place++;
-        }
-        sub_index++;
-    }
-    
-    if (count_free_place > 0) {
-        hashtab_add_DBJ(hash_tab, key, DJBHash(key, strlen(key)));
-        printf("Word not found, but it was add\n");
-        for (node = hash_tab[index]; node != NULL && index < HASH_SIZE; index++) {
-            if (strcmp(node->key, key) == 0) {
-                return node;
-            }
-        }       
-    } 
+    return NULL;
 }
 
 struct HashTab *hashtab_lookup_KR(struct HashTab **hash_tab, char *key) 
@@ -136,23 +121,7 @@ struct HashTab *hashtab_lookup_KR(struct HashTab **hash_tab, char *key)
         }
     }
 
-    sub_index = index;
-    while (sub_index < HASH_SIZE) {
-        if (hash_tab[sub_index] == NULL) {
-            count_free_place++;
-        }
-        sub_index++;
-    }
-    
-    if (count_free_place > 0) {
-        hashtab_add_DBJ(hash_tab, key, KRHash(key));
-        printf("Word not found, but it was add\n");
-        for (node = hash_tab[index]; node != NULL && index < HASH_SIZE; index++) {
-            if (strcmp(node->key, key) == 0) {
-                return node;
-            }
-        }       
-    } 
+    return NULL;
 }
 
 void hashtab_delete_DKB(struct HashTab **hash_tab, char *key) 

@@ -3,27 +3,65 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include "bstree.h"
 #include "hashtab.h"
 #include "hash.h"
 
+#define NUM_WORD 200000
+#define DEL 10000
+
 char* generation_word(char* word);
 void generation_word2(char* str);
+double wtime();
 
 int main() 
 { 
     srand(time(NULL));
     char* word;
-    char word_list[HASH_SIZE][19];
+    char word_list[NUM_WORD][19];
+    uint32_t rand_word, count = 0, test;
+    long double start_time, end_time, time;
     struct bstree *tree, *node;
     struct HashTab hash_tab[HASH_SIZE], *node_hash;
     
     //TASK 1
-    for (int i = 0; i < HASH_SIZE; i++) {
+    for (int i = 0; i < NUM_WORD; i++) {
         word = generation_word(word);
         strcpy(word_list[i], word);
+        free(word);
+        count++;
     }
 
+    tree = bstree_create(word_list[0], DJBHash_BS(word_list[0], strlen(word_list[0])));
+    for (uint32_t i = 2; i < NUM_WORD; i++) {
+        bstree_add(tree, word_list[i - 1], DJBHash_BS(word_list[i - 1], strlen(word_list[i - 1])));
+        if (i % DEL == 0) {
+            rand_word = rand() % (i - 2);
+            start_time = wtime();
+            node = bstree_lookup(tree, word_list[rand_word]);
+            end_time = wtime();
+            time = end_time - start_time;
+            printf("words = %d, avr. time %.9Lf\n", i, time);
+
+        } 
+    }
+
+
+    hashtab_init(hash_tab);
+    for (uint32_t i = 0; i < HASH_SIZE; i++) {
+        hashtab_add_DBJ(hash_tab, word_list[i], DJBHash(word_list[i], strlen(word_list[i])));
+    }
+    for (uint32_t i = 0; i < HASH_SIZE; i++) {
+        node_hash = hashtab_lookup_DJB(hash_tab, word_list[i]);
+        if (node != NULL) {
+            printf("%d %s %d\n", i, node_hash->key, node_hash->value);
+
+        }
+    }
+
+
+/*
     //hash
     hashtab_init(hash_tab);
 
@@ -36,7 +74,7 @@ int main()
     char hash_word2[16] = "xuwkvmycubq";
     hashtab_add_DBJ(hash_tab, hash_word2, DJBHash(hash_word2, strlen(hash_word2)));
 
-    node_hash = hashtab_lookup_DJB(&hash_tab, "qewqwe");
+    node_hash = hashtab_lookup_DJB(hash_tab, "qewqwe");
     hashtab_print(hash_tab);
     printf("\nlookup: %s %d\n", node_hash->key, node_hash->value);
 
@@ -44,8 +82,8 @@ int main()
     hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
     hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
     hashtab_print(hash_tab);
-
-    free(word);
+*/
+    //free(word);
 
     return 0;
 }
@@ -53,7 +91,7 @@ int main()
 char* generation_word(char* word) 
 {
     uint_least8_t i = 0;
-    uint_least8_t num_ch = rand() % 12 + 6;
+    uint_least8_t num_ch = rand() % 10 + 8;
     word = malloc(num_ch * sizeof(char));
     
     while (i < num_ch - 1) {
@@ -125,4 +163,9 @@ void generation_word2(char* str) {
     }
 }
 
-
+double wtime()
+{
+    struct timeval t;
+    gettimeofday(&t, NULL);
+    return (double)t.tv_sec + (double)t.tv_usec * 1E-6;
+}

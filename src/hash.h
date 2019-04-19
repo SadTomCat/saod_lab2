@@ -5,6 +5,7 @@
 
 void generation_word2(char* str);
 unsigned int DJBHash(char* str, unsigned int len);
+unsigned int DJBHash_BS(char* str, unsigned int len);
 unsigned int KRHash(char *s);
 //void generation_word(char** word);
 

@@ -4,6 +4,7 @@
 struct HashTab {
     char *key;
     uint32_t value;
+
 };
 
 unsigned int KRHash(char *s); // // 
