@@ -1,5 +1,5 @@
-#ifndef GEN_AND_HASH_H_
-#define GEN_AND_HASH_H_
+#ifndef HASH_H_
+#define HASH_H_
 
 #define HASH_SIZE 50003
 
