@@ -27,16 +27,16 @@ void bstree_add(struct bstree *tree, char *key, int value)
 
     int cmp;
     struct bstree *parent, *node;
-
     while (tree != NULL) {
         parent = tree;
         cmp = strcmp(key, tree->key);
         if (cmp < 0) {
             tree = tree->left;
-        } else if (cmp > 0) {
+        } else if (cmp > 0) 
+        {
             tree = tree->right;
         } else {
-            printf("ERROR: %s\n", key);
+            printf("ERROR: %s %d\n", key, cmp);
             return;
         }
     } 
@@ -149,6 +149,9 @@ struct bstree *bstree_delete(struct bstree *tree, char *key)
         } else {
             most_left_parent->right = most_left->right;
         }
+
+        free(tree);
+
     }
 }
 

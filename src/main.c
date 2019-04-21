@@ -8,7 +8,6 @@
 #include "hashtab.h"
 #include "hash.h"
 
-#define NUM_WORD 200000
 #define DEL 10000
 
 char* generation_word(char* word);
@@ -19,71 +18,114 @@ int main()
 { 
     srand(time(NULL));
     char* word;
-    char word_list[NUM_WORD][19];
-    uint32_t rand_word, count = 0, test;
-    long double start_time, end_time, time;
+    char word2[5] = "aaaa";
+    char word_list[HASH_SIZE][19];
+    uint32_t rand_word, comparison;
+    long double start_time, end_time, time, avr;
     struct bstree *tree, *node;
-    struct HashTab hash_tab[HASH_SIZE], *node_hash;
+    struct HashTab *hash_tab[HASH_SIZE], *node_hash;
     
-    //TASK 1
-    for (int i = 0; i < NUM_WORD; i++) {
+    //TASK 1    
+    printf("TASK 1\n");
+    for (int i = 0; i < HASH_SIZE; i++) {
         word = generation_word(word);
         strcpy(word_list[i], word);
         free(word);
-        count++;
     }
 
-    tree = bstree_create(word_list[0], DJBHash_BS(word_list[0], strlen(word_list[0])));
-    for (uint32_t i = 2; i < NUM_WORD; i++) {
-        bstree_add(tree, word_list[i - 1], DJBHash_BS(word_list[i - 1], strlen(word_list[i - 1])));
-        if (i % DEL == 0) {
-            rand_word = rand() % (i - 2);
-            start_time = wtime();
-            node = bstree_lookup(tree, word_list[rand_word]);
-            end_time = wtime();
-            time = end_time - start_time;
-            printf("words = %d, avr. time %.10Lf\n", i, time);
+    printf("TREE\n");
+    tree = bstree_create(word_list[0], DJBHash(word_list[0], strlen(word_list[0])));
+    printf("%s\n", tree->key);
 
+    for (uint32_t i = 2; i < HASH_SIZE; i++) {
+        bstree_add(tree, word_list[i - 1], DJBHash(word_list[i - 1], strlen(word_list[i - 1])));
+        if (i % DEL == 0) {
+            avr = 0;
+            for (uint32_t j = 0; j < 10000; j++) {
+                rand_word = rand() % (i - 2);
+                start_time = wtime();
+                node = bstree_lookup(tree, word_list[rand_word]);
+                end_time = wtime();
+                time = end_time - start_time;
+                avr+= time;
+            }
+            avr = avr / 10000;
+            printf("words = %d, average time %.10Lf\n", i, avr);
         } 
     }
 
-
-
-  /*  //hash
+    printf("HASH\n");
+    uint32_t col = 10000;
     hashtab_init(hash_tab);
-    hashtab_print(hash_tab);
-    printf("\n");
-
-    char hash_word3[16] = "woconfsptxv";
-    hashtab_add_DBJ(hash_tab, hash_word3, DJBHash(hash_word3, strlen(hash_word3)));
-
-    char hash_word[16] = "kdmctrcemqhmvmw";
-    hashtab_add_DBJ(hash_tab, hash_word, DJBHash(hash_word, strlen(hash_word)));
-    
-    
-    char hash_word2[16] = "xuwkvmycubq";
-    hashtab_add_DBJ(hash_tab, hash_word2, DJBHash(hash_word2, strlen(hash_word2)));
-    hashtab_print(hash_tab);
-
-    printf("\n");
-    for (int i = 0; i < HASH_SIZE; i++) {
-        printf("hash_tab[%d] %p\n", i, &hash_tab[i]);
+    for (uint32_t i = 0; i < HASH_SIZE; i++) {
+        hashtab_add(hash_tab, word_list[i], DJBHash(word_list[i], strlen(word_list[i])));
     }
-    printf("\n");
 
-    node_hash = hashtab_lookup_DJB(hash_tab, "kdmctrcemqhmvmw");
-    printf("%s\n", node_hash->key);
-    node_hash = node_hash->next;
-    printf("%s %p %p\n", node_hash->key, node_hash->next, node_hash);
+    for (int  i = 10000; i < HASH_SIZE; i+=10000) {
+            avr = 0;
+            for (uint32_t j = 0; j < 10000; j++) {
+                rand_word = rand() % (i - 2);
+                start_time = wtime();
+                node_hash = hashtab_lookup(hash_tab, word_list[rand_word]);
+                end_time = wtime();
+                time = end_time - start_time;
+                avr+= time;
+            }
+            avr = avr / 10000;
+            printf("words = %d, average time %.10Lf\n", i, avr);
+    }
 
-    hashtab_add_DBJ(hash_tab, "qewqwe", DJBHash("qewqwe", strlen("qewqwe")));
-    hashtab_print(hash_tab);
+    hashtab_clear(hash_tab);
 
-    node_hash = hashtab_lookup_DJB(hash_tab, "xuwkvmycubq");
-        printf("%s %p %p\n", node_hash->key, node_hash->next, node_hash);
-*/
-    //free(word);
+/*
+  //TASK 2
+  printf("TASK 2\n");
+    printf("TREE\n");
 
+    strcpy(word_list[0], word2);
+    for (uint32_t i = 1; i < HASH_SIZE - 1; i++) {
+        generation_word2(word2);
+        strcpy(word_list[i], word2);
+    }
+
+    tree = bstree_create(word_list[0], DJBHash(word_list[0], strlen(word_list[0])));
+    for (uint32_t i = 1; i < HASH_SIZE - 1; i++) {
+        bstree_add(tree, word_list[i], DJBHash(word_list[i], strlen(word_list[i])));
+        if (i % DEL == 0) {
+            start_time = wtime();
+            node = bstree_lookup(tree, word_list[i]);
+            end_time = wtime();
+            time = end_time - start_time;
+            printf("words = %d, time %.10Lf\n", i, time);
+        } 
+    }
+
+    //hash
+    printf("HASH\n");
+    
+    word = generation_word(word);
+    while (DJBHash("aaaa", strlen("aaaa")) != DJBHash(word, strlen(word))) {
+        word = generation_word(word);
+    }
+    strcpy(word_list[0], word);
+    for (uint32_t i = 1; i < HASH_SIZE; i++) {
+        strcpy(word_list[i], "aaaa");
+    }
+
+    hashtab_init(hash_tab);
+    hashtab_add(hash_tab, word_list[0], DJBHash(word_list[0], strlen(word_list[0])));
+   
+    for (uint32_t i = 1; i < HASH_SIZE; i++) {
+        hashtab_add(hash_tab, word_list[i], DJBHash(word_list[i], strlen(word_list[i])));
+        if (i % DEL == 0) {
+            start_time = wtime();
+            node_hash = hashtab_lookup(hash_tab, word_list[0]);
+            end_time = wtime();
+            time = end_time - start_time;
+            printf("words = %d, average time %.10Lf\n", i, time);
+        }
+    }
+  */  
     return 0;
 }
 
@@ -102,7 +144,8 @@ char* generation_word(char* word)
     return word;
 }
 
-void generation_word2(char* str) {
+void generation_word2(char* str) 
+{
     if (str[0] == 122 && str[1] == 122 && str[2] == 122 && str[3] == 122) {
         printf("ERROR: str = \'z\' \'z\' \'z\' \'z\'\n");
         return;

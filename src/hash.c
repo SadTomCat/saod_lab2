@@ -16,16 +16,6 @@ unsigned int DJBHash(char* str, unsigned int len)
     return hash % HASH_SIZE;
 }
 
-unsigned int DJBHash_BS(char* str, unsigned int len)
-{
-    unsigned long hash = 5381;
-    uint32_t c;
-
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c;
-
-    return hash;
-}
 
 unsigned int KRHash(char *s) 
 {

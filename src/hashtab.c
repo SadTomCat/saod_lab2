@@ -18,130 +18,74 @@ void hashtab_print(struct HashTab **hash_tab)
         if (hash_tab[i] == NULL) {
             printf("hash_tab[%d] = %p\n", i, &hash_tab[i]);
         } else {
-            printf("%p hashatab[%d] key - %s, value - %d, next = %p\n", &hash_tab[i], i, hash_tab[i]->key, 
+            printf("hashatab[%d] key - %s, value - %d, next = %p\n", i, hash_tab[i]->key, 
                 hash_tab[i]->value, hash_tab[i]->next);
         }
     }
+    printf("\n");
 }
 
-void hashtab_add_DBJ(struct HashTab **hash_tab, char *key, int value) 
+void hashtab_add(struct HashTab **hash_tab, char *key, int value) 
 {
     struct HashTab *node = malloc(sizeof(*node));
+    uint32_t collision = 0;
     uint32_t index = DJBHash(key, strlen(key));
+    //uint32_t index = KRHash(key);
     
     if (index >= HASH_SIZE) {
-        printf("ERROR: hash more than max index\n");
+        printf("ERROR: hash more than max index %d\n", index);
         return;
     }
 
     if (node != NULL) {
-        if (hash_tab[index] == NULL) {
-            node->key = key;
-            node->value = value;
-            node->next = NULL;
-            hash_tab[index] = node;
-            return;
-        }
-
-        if (hash_tab[index] != NULL) {
-            node->key = key;
-            node->value = value;
-            node->next = NULL;
-            hash_tab[index]->next = node;
-            return;
-        }
+        node->key = key;
+        node->value = value;
+        node->next = hash_tab[index];
+        hash_tab[index] = node;
     }
 }
 
-void hashtab_add_KR(struct HashTab **hash_tab, char *key, int value) 
-{
-    struct HashTab *node = malloc(sizeof(*node));
-    uint32_t index = KRHash(key);
-
-    if (index >= HASH_SIZE) {
-        printf("ERROR: hash more than max index\n");
-        return;
-    }
-    
-    if (node != NULL) {
-        if (hash_tab[index] == NULL) {
-            node->key = key;
-            node->value = value;
-            hash_tab[index] = node;
-        } else {
-            while (hash_tab[index] != NULL && index < HASH_SIZE) {
-                index++;
-            }
-            
-            if (index == HASH_SIZE) {
-                printf("ERROR: not found free place\n");
-                return;
-            }
-
-            if (index < HASH_SIZE && hash_tab[index] == NULL) {
-                node->key = key;
-                node->value = value;
-                hash_tab[index] = node;
-            }
-        }
-    }
-}
-
-
-struct HashTab *hashtab_lookup_DJB(struct HashTab **hash_tab, char *key) 
+struct HashTab *hashtab_lookup(struct HashTab **hash_tab, char *key) 
 {
     struct HashTab *node;
     uint32_t index = DJBHash(key, strlen(key));
-    
+    //uint32_t index = KRHash(key);
+
     for (node = hash_tab[index]; node != NULL; node = node->next) {
         if (strcmp(node->key, key) == 0) {
             return node;
         }
     }
-    printf("bads\n");
+
     return NULL;
 }
 
-struct HashTab *hashtab_lookup_KR(struct HashTab **hash_tab, char *key) 
-{
-    struct HashTab *node;
-    uint32_t index = KRHash(key);
-    uint32_t count_free_place, sub_index;
-    
-    for (node = hash_tab[index]; node != NULL && index < HASH_SIZE; index++) {
-        if (strcmp(node->key, key) == 0) {
-            return node;
-        }
-    }
-
-    sub_index = index;
-    while (sub_index < HASH_SIZE) {
-        if (hash_tab[sub_index] == NULL) {
-            count_free_place++;
-        }
-        sub_index++;
-    }
-    
-    if (count_free_place > 0) {
-        hashtab_add_DBJ(hash_tab, key, KRHash(key));
-        printf("Word not found, but it was add\n");
-        for (node = hash_tab[index]; node != NULL && index < HASH_SIZE; index++) {
-            if (strcmp(node->key, key) == 0) {
-                return node;
-            }
-        }       
-    } 
-}
-
-void hashtab_delete_DKB(struct HashTab **hash_tab, char *key) 
+void hashtab_delete(struct HashTab **hash_tab, char *key) 
 {
     struct HashTab *node, *prev = NULL;
     uint32_t index = DJBHash(key, strlen(key));
+    //uint32_t index = KRHash(key);
     uint32_t count_free_place, sub_index;
     
-    for (node = hash_tab[index]; node != NULL && index < HASH_SIZE; index++) {
-        if (strcmp(node->key, key) == 0) {
-            
+    for (node = hash_tab[index]; node != NULL; node = node->next) {
+        if (0 == strcmp(node->key, key)) {
+            if (prev == NULL) {
+                hash_tab[index] = node->next;
+            } else {
+                prev->next = node->next;
+            }
+            free(node);
+            return;
         }
+        prev = node;
     }
 }
+
+void hashtab_clear(struct HashTab **hash_tab) 
+{
+    for (uint32_t i = 0; i < HASH_SIZE; i++) {
+        while (hash_tab[i] != NULL) {
+            hashtab_delete(hash_tab, hash_tab[i]->key);
+        }    
+    }
+} 
