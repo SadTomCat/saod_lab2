@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bstree.h"
+#include "include/bstree.h"
 
 struct bstree *bstree_create(char *key, int value) 
 {

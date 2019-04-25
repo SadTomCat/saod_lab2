@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdio.h>
-#include "hash.h"
+#include "include/hash.h"
 
 unsigned int DJBHash(char* str, unsigned int len) 
 {

@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
-#include "bstree.h"
-#include "hashtab.h"
-#include "hash.h"
+#include "include/bstree.h"
+#include "include/hashtab.h"
+#include "include/hash.h"
 
 #define DEL 10000
 
